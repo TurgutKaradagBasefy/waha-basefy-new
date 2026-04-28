@@ -31,7 +31,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          port: 3011
+          port: 3012
           script: |
             mkdir -p "${{ secrets.APP_DIR }}"
 
@@ -41,7 +41,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          port: 3011
+          port: 3012
           source: "."
           target: ${{ secrets.APP_DIR }}
 
@@ -51,7 +51,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          port: 3011
+          port: 3012
           script: |
             set -euo pipefail
             cd "${{ secrets.APP_DIR }}"
