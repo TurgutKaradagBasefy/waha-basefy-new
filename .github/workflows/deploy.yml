@@ -31,7 +31,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT || 22 }}
+          port: 3011
           script: |
             mkdir -p "${{ secrets.APP_DIR }}"
 
@@ -41,7 +41,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT || 22 }}
+          port: 3011
           source: "."
           target: ${{ secrets.APP_DIR }}
 
@@ -51,14 +51,9 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT || 22 }}
+          port: 3011
           script: |
             set -euo pipefail
             cd "${{ secrets.APP_DIR }}"
-            # Rebuild without cache to avoid stale layers
-            docker compose -f docker-compose.yaml build --no-cache waha
-            # Verify dist exists inside the built image before starting
-            docker compose -f docker-compose.yaml run --rm --entrypoint sh waha -lc 'ls -la /app/dist && test -f /app/dist/main.js'
-            # Start services
-            docker compose -f docker-compose.yaml up -d --remove-orphans
+            docker compose -f docker-compose.yaml up -d --build --remove-orphans
             docker compose -f docker-compose.yaml ps
