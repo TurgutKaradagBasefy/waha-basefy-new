@@ -1,7 +1,5 @@
 tmp/*
 src/core/engines/gows/proto
-.env
-.envs/*
 *.heapsnapshot
 .yarn
 example.ts

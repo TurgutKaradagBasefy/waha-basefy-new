@@ -1,0 +1,64 @@
+name: Deploy to Server (SSH + Docker Compose)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate required secrets
+        run: |
+          set -euo pipefail
+          [ -n "${{ secrets.SSH_HOST }}" ] || (echo "Missing secret: SSH_HOST" && exit 1)
+          [ -n "${{ secrets.SSH_USER }}" ] || (echo "Missing secret: SSH_USER" && exit 1)
+          [ -n "${{ secrets.SSH_KEY }}" ] || (echo "Missing secret: SSH_KEY" && exit 1)
+          [ -n "${{ secrets.APP_DIR }}" ] || (echo "Missing secret: APP_DIR" && exit 1)
+          echo "All required secrets are present."
+
+      - name: Ensure app directory exists
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            mkdir -p "${{ secrets.APP_DIR }}"
+
+      - name: Upload sources to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          source: "."
+          target: ${{ secrets.APP_DIR }}
+
+      - name: Deploy with Docker Compose
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            set -euo pipefail
+            cd "${{ secrets.APP_DIR }}"
+            # Rebuild without cache to avoid stale layers
+            docker compose -f docker-compose.yaml build --no-cache waha
+            # Verify dist exists inside the built image before starting
+            docker compose -f docker-compose.yaml run --rm --entrypoint sh waha -lc 'ls -la /app/dist && test -f /app/dist/main.js'
+            # Start services
+            docker compose -f docker-compose.yaml up -d --remove-orphans
+            docker compose -f docker-compose.yaml ps
