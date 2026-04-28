@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(yarn build:*)",
+      "Bash(cat:*)",
+      "Bash(node:*)",
+      "Bash(npm show:*)",
+      "Bash(python3:*)",
+      "Bash(yarn test:unit:*)",
+      "Bash(npx tsc:*)",
+      "Bash(pre-commit run:*)",
+      "Bash(yarn test:*)",
+      "Bash(yarn tsc *)",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(yarn install *)",
+      "PowerShell(yarn install 2>&1)",
+      "PowerShell(Get-Command yarn,npm,pnpm -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Command node -ErrorAction SilentlyContinue)",
+      "PowerShell(& \"C:\\\\Program Files\\\\nodejs\\\\corepack.cmd\" enable 2>&1)",
+      "Bash(gh api *)",
+      "PowerShell(Get-Command gh -ErrorAction SilentlyContinue)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "PowerShell(Get-Command python,python3,pandoc -ErrorAction SilentlyContinue | Select-Object Name,Source; $w = New-Object -ComObject Word.Application -ErrorAction SilentlyContinue; if \\($w\\) { Write-Output \"WORD_COM_OK\"; $w.Quit\\(\\) } else { Write-Output \"NO_WORD_COM\" })",
+      "PowerShell(try { $w = New-Object -ComObject Word.Application; Write-Host \"WORD_OK\"; $w.Quit\\(\\) } catch { Write-Host \"WORD_FAIL: $_\" })",
+      "PowerShell($cmds = @\\('python','python3','pandoc','py'\\); foreach \\($c in $cmds\\) { $r = Get-Command $c -ErrorAction SilentlyContinue; if \\($r\\) { Write-Host \"$c -> $\\($r.Source\\)\" } else { Write-Host \"$c -> MISSING\" } })",
+      "PowerShell(python -c \"import docx; print\\('docx_ok', docx.__version__\\)\" 2>&1)",
+      "PowerShell(& \"d:\\\\Work\\\\waha\\\\scripts\\\\generate-endpoints-doc.ps1\")",
+      "WebFetch(domain:github.com)"
+    ]
+  }
+}
